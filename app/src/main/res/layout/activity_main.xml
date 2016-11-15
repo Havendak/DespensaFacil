@@ -4,6 +4,11 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <include
+        layout="@layout/barra_superior"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        />
     <TextView
         android:text="TextView"
         android:layout_width="match_parent"
