@@ -23,7 +23,9 @@ import android.view.View;
 import com.google.android.gms.vision.CameraSource;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
+import java.util.Vector;
 
 /**
  * A view which renders a series of custom graphics to be overlayed on top of an associated preview
@@ -43,14 +45,14 @@ import java.util.Set;
  * from the preview's coordinate system to the view coordinate system.</li>
  * </ol>
  */
-public class GraphicOverlay extends View {
+public class GraphicOverlay<T extends GraphicOverlay.Graphic> extends View {
     private final Object mLock = new Object();
     private int mPreviewWidth;
     private float mWidthScaleFactor = 1.0f;
     private int mPreviewHeight;
     private float mHeightScaleFactor = 1.0f;
     private int mFacing = CameraSource.CAMERA_FACING_BACK;
-    private Set<Graphic> mGraphics = new HashSet<>();
+    private Set<T> mGraphics = new HashSet<>();
 
     /**
      * Base class for a custom graphics object to be rendered within the graphic overlay.  Subclass
@@ -135,7 +137,7 @@ public class GraphicOverlay extends View {
     /**
      * Adds a graphic to the overlay.
      */
-    public void add(Graphic graphic) {
+    public void add(T graphic) {
         synchronized (mLock) {
             mGraphics.add(graphic);
         }
@@ -145,11 +147,35 @@ public class GraphicOverlay extends View {
     /**
      * Removes a graphic from the overlay.
      */
-    public void remove(Graphic graphic) {
+    public void remove(T graphic) {
         synchronized (mLock) {
             mGraphics.remove(graphic);
         }
         postInvalidate();
+    }
+
+    /**
+     * Returns a copy (as a list) of the set of all active graphics.
+     * @return list of all active graphics.
+     */
+    public List<T> getGraphics() {
+        synchronized (mLock) {
+            return new Vector(mGraphics);
+        }
+    }
+
+    /**
+     * Returns the horizontal scale factor.
+     */
+    public float getWidthScaleFactor() {
+        return mWidthScaleFactor;
+    }
+
+    /**
+     * Returns the vertical scale factor.
+     */
+    public float getHeightScaleFactor() {
+        return mHeightScaleFactor;
     }
 
     /**

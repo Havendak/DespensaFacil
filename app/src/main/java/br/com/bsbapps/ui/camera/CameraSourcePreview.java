@@ -15,8 +15,10 @@
  */
 package br.com.bsbapps.ui.camera;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.res.Configuration;
+import android.support.annotation.RequiresPermission;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.SurfaceHolder;
@@ -50,7 +52,8 @@ public class CameraSourcePreview extends ViewGroup {
         addView(mSurfaceView);
     }
 
-    public void start(CameraSource cameraSource) throws IOException {
+    @RequiresPermission(Manifest.permission.CAMERA)
+    public void start(CameraSource cameraSource) throws IOException, SecurityException {
         if (cameraSource == null) {
             stop();
         }
@@ -63,7 +66,8 @@ public class CameraSourcePreview extends ViewGroup {
         }
     }
 
-    public void start(CameraSource cameraSource, GraphicOverlay overlay) throws IOException {
+    @RequiresPermission(Manifest.permission.CAMERA)
+    public void start(CameraSource cameraSource, GraphicOverlay overlay) throws IOException, SecurityException {
         mOverlay = overlay;
         start(cameraSource);
     }
@@ -81,7 +85,8 @@ public class CameraSourcePreview extends ViewGroup {
         }
     }
 
-    private void startIfReady() throws IOException {
+    @RequiresPermission(Manifest.permission.CAMERA)
+    private void startIfReady() throws IOException, SecurityException {
         if (mStartRequested && mSurfaceAvailable) {
             mCameraSource.start(mSurfaceView.getHolder());
             if (mOverlay != null) {
@@ -107,6 +112,8 @@ public class CameraSourcePreview extends ViewGroup {
             mSurfaceAvailable = true;
             try {
                 startIfReady();
+            } catch (SecurityException se) {
+                Log.e(TAG,"Do not have permission to start the camera", se);
             } catch (IOException e) {
                 Log.e(TAG, "Could not start camera source.", e);
             }
@@ -137,6 +144,7 @@ public class CameraSourcePreview extends ViewGroup {
         // Swap width and height sizes when in portrait, since it will be rotated 90 degrees
         if (isPortraitMode()) {
             int tmp = width;
+            //noinspection SuspiciousNameCombination
             width = height;
             height = tmp;
         }
@@ -160,6 +168,8 @@ public class CameraSourcePreview extends ViewGroup {
 
         try {
             startIfReady();
+        } catch (SecurityException se) {
+            Log.e(TAG,"Do not have permission to start the camera", se);
         } catch (IOException e) {
             Log.e(TAG, "Could not start camera source.", e);
         }
