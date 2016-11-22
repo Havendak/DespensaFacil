@@ -1,16 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">DespensaFacil</string>
-    <string name="ok">OK</string>
-    <string name="permission_camera_rationale">Access to the camera is needed for detection</string>
-    <string name="no_camera_permission">This application cannot run because it does not have the camera permission.  The application will now exit.</string>
-    <string name="low_storage_error">Face detector dependencies cannot be downloaded due to low device storage</string>
-    <string name="title_activity_main">Barcode Reader Sample</string>
-    <string name="barcode_header">Click &quot;Read Barcode&quot; to read a barcode</string>
-    <string name="read_barcode">Read Barcode</string>
-    <string name="auto_focus">Auto Focus</string>
-    <string name="use_flash">Use Flash</string>
-    <string name="barcode_success">Barcode read successfully</string>
-    <string name="barcode_failure">No barcode captured</string>
-    <string name="barcode_error">"Error reading barcode: %1$s"</string>
+
+    <string name="app_name">ZXing Sample</string>
+    <string name="scan_barcode">Scan Barcode</string>
+    <string name="any_orientation">1D Any Orientation</string>
+    <string name="scan_from_fragment">Scan from fragment</string>
+    <string name="front_camera">Front Camera</string>
+    <string name="custom_activity">Continuous Scan</string>
+    <string name="toolbar_activity">Activity with Toolbar</string>
+    <string name="custom_scanner">Custom Scanner Activity</string>
+    <string name="scanner_with_margin">Scanner with Margin</string>
+    <string name="scanner_with_timeout">Finish Scan in 8 Seconds</string>
+    <string name="turn_on_flashlight">Turn on Flashlight</string>
+    <string name="turn_off_flashlight">Turn off Flashlight</string>
+
 </resources>
