@@ -9,11 +9,14 @@ import android.view.MenuItem;
 
 
 public class MainActivity extends AppCompatActivity {
+    DatabaseHelper mydb;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        mydb = new DatabaseHelper(this);
 
     }
 
