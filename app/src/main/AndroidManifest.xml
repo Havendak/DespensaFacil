@@ -30,7 +30,7 @@
         android:screenOrientation="fullSensor"
         android:stateNotNeeded="true"
         android:theme="@style/zxing_CaptureTheme"
-        android:windowSoftInputMode="stateAlwaysHidden"></activity>
+        android:windowSoftInputMode="stateAlwaysHidden" />
 
     <application
         android:allowBackup="true"
@@ -53,7 +53,8 @@
             android:stateNotNeeded="true"
             android:theme="@style/zxing_CaptureTheme"
             android:windowSoftInputMode="stateAlwaysHidden" />
-        <activity android:name=".barra_superior"></activity>
+        <activity android:name=".barra_superior" />
+        <activity android:name=".MainActivity"></activity>
     </application>
 
 </manifest>
