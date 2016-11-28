@@ -2,6 +2,8 @@ package br.com.bsbapps.despensafacil;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.hardware.Camera;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -15,6 +17,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -27,14 +30,40 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 
 public class AddProductActivity extends AppCompatActivity {
+    Long currentList;
+
+    private EditText barcodeEditText;
+    private EditText productEditText;
+    private EditText quantityEditText;
+    private EditText dueDateEditText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_product);
+
+        SharedPreferences sharedPref = getPreferences(Context.MODE_PRIVATE);
+        currentList = sharedPref.getLong("br.com.bsbapps.despensafacil.CURRENT_LIST_ID", 1);
+
+        barcodeEditText = (EditText) findViewById(R.id.addBarcodeText);
+        productEditText = (EditText) findViewById(R.id.productNameText);
+        quantityEditText = (EditText) findViewById(R.id.quantityText);
+        dueDateEditText= (EditText) findViewById(R.id.dueDateText);
+
+        Bundle extras = getIntent().getExtras();
+
+        if (extras!=null){
+            barcodeEditText.setText(extras.getString("barcode"));
+            productEditText.setText(extras.getString("product"));
+            quantityEditText.setText(extras.getString("quantity"));
+            dueDateEditText.setText(extras.getString("duedate"));
+        }
     }
 
     public void scanBarcode(View view) {
@@ -130,6 +159,50 @@ public class AddProductActivity extends AppCompatActivity {
         protected void onPostExecute(String result) {
             TextView productText = (TextView) findViewById(R.id.productNameText);
             productText.setText(result);
+        }
+    }
+
+    private void saveProductOnList() {
+        if (barcodeEditText.getText().length() != 0) {
+            AsyncTask<Object, Object, Object> saveProductTask =
+                    new AsyncTask<Object, Object, Object>() {
+                        @Override
+                        protected Object doInBackground(Object... params) {
+                            saveProduct();
+                            return null;
+                        }
+
+                        @Override
+                        protected void onPostExecute(Object result) {
+                            finish();
+                        }
+                    };
+        }
+    }
+
+    private void saveProduct(){
+        DatabaseConnector dbConnector = new DatabaseConnector(this);
+        Cursor query;
+        if (getIntent().getExtras()==null){
+            dbConnector.open();
+            query = dbConnector.getProduct(barcodeEditText.getText().toString());
+            if(query == null){
+                dbConnector.insertProduct(barcodeEditText.getText().toString(), productEditText.getText().toString());
+            }
+
+            DateFormat formatter = new SimpleDateFormat("dd/MM/yyyy"); // Make sure user insert date into edittext in this format.
+            Date dateObject = new Date();
+            try{
+                String dob_var=(dueDateEditText.getText().toString());
+                dateObject = formatter.parse(dob_var);
+            }
+            catch (java.text.ParseException e)
+            {
+                e.printStackTrace();
+            }
+            dbConnector.insertProductOnList(currentList, barcodeEditText.getText().toString(),
+                    Integer.parseInt(quantityEditText.getText().toString()),dateObject);
+
         }
     }
 }

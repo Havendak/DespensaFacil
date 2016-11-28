@@ -1,7 +1,12 @@
 package br.com.bsbapps.despensafacil;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.database.Cursor;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -15,10 +20,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-    }
-
-    public void createList(){
-        DatabaseConnector dbConnector = new DatabaseConnector(this);
+        new createFirstList().execute(new Long[] {null});
 
     }
 
@@ -43,6 +45,34 @@ public class MainActivity extends AppCompatActivity {
             startActivity(new Intent(getApplicationContext(), AddProductActivity.class));
         }
         return true;
+    }
+
+    private class createFirstList extends AsyncTask<Long, Object, Cursor>{
+        DatabaseConnector dbConnector = new DatabaseConnector(MainActivity.this);
+
+        @Override
+        protected Cursor doInBackground(Long... params){
+            dbConnector.open();
+            return dbConnector.getDefaultList();
+        }
+
+        @Override
+        protected void onPostExecute(Cursor result){
+            super.onPostExecute(result);
+            Long id;
+            if(result == null) {
+                id = dbConnector.insertList("Primeira Lista", true);
+            } else {
+                result.moveToFirst();
+                id = result.getLong(result.getColumnIndex("user_list_id"));
+            }
+            result.close();
+            dbConnector.close();
+            SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(MainActivity.this.getApplicationContext());
+            SharedPreferences.Editor editor = preferences.edit();
+            editor.putLong("br.com.bsbapps.despensafacil.CURRENT_LIST_ID", id); // value to store
+            editor.apply();
+        }
     }
 
 }

@@ -18,8 +18,9 @@ public class DatabaseOpenHelper extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db){
         //Criação da tabela df_user_list
         String createQuery="CREATE TABLE df_user_list (" +
-                "  user_list_id INTEGER UNSIGNED NOT NULL AUTO_INCREMENT," +
+                "  user_list_id LONG UNSIGNED NOT NULL AUTO_INCREMENT," +
                 "  user_list_name VARCHAR(50) NULL," +
+                "  default_list BOOL NULL," +
                 "  PRIMARY KEY(user_list_id)" +
                 ");";
         db.execSQL(createQuery);

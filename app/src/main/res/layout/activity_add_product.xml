@@ -62,7 +62,8 @@
         android:text="Salvar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/btnSave" />
+        android:id="@+id/btnSave"
+        android:onClick="saveProductOnList"/>
 
 
 </LinearLayout>
