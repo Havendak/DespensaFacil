@@ -18,6 +18,12 @@ import com.google.zxing.client.android.Intents;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.MalformedURLException;
+import java.net.URL;
+
 
 public class AddProduct extends AppCompatActivity {
 
@@ -70,6 +76,27 @@ public class AddProduct extends AppCompatActivity {
                 Log.d("MainActivity", "Scanned");
                 TextView barcodeText = (TextView) findViewById(R.id.addBarcodeText);
                 barcodeText.setText(result.getContents());
+
+                try {
+                    String resultText="";
+                    String urlText = "http://becklas.com/bsbapps/despensafacil/dfsearch.php?source=12579de41dd291e38ec0f9acd4a6c720";
+                    urlText = urlText.concat("q=");
+                    urlText = urlText.concat(barcodeText.getText().toString());
+                    URL searchURL = new URL(urlText);
+                    try {
+                        BufferedReader in = new BufferedReader(new InputStreamReader(searchURL.openStream()));
+                        String inputLine;
+                        while ((inputLine = in.readLine()) != null)
+                            resultText=resultText.concat(inputLine);
+                        in.close();
+                        TextView productText = (TextView) findViewById(R.id.productNameText);
+                        productText.setText(resultText);
+                    } catch (IOException e) {
+
+                    }
+                } catch (MalformedURLException e) {
+
+                }
             }
         } else {
             // This is important, otherwise the result will not be passed to the fragment
