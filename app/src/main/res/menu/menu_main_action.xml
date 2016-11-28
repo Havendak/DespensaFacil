@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="schemas.android.com/tools"
+    tools:context="br.com.bsbapps.despensafacil"
+    xmlns:despensafacil="http://schemas.android.com/apk/res-auto">
+    <item android:id="@+id/menu_main_action_dashboard"
+        android:title="Dashboard"
+        despensafacil:showAsAction="ifRoom|withText" />
+    <item android:id="@+id/menu_main_action_lists"
+        android:title="Listas"
+        despensafacil:showAsAction="ifRoom|withText" />
+    <item android:id="@+id/menu_main_action_add_product"
+        android:title="Novo Produto"
+        despensafacil:showAsAction="ifRoom|withText" />
+</menu>

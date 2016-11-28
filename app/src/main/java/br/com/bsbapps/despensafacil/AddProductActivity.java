@@ -1,7 +1,11 @@
 package br.com.bsbapps.despensafacil;
 
+import android.content.Context;
 import android.content.Intent;
 import android.hardware.Camera;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBarActivity;
@@ -25,7 +29,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 
 
-public class AddProduct extends AppCompatActivity {
+public class AddProductActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,31 +80,56 @@ public class AddProduct extends AppCompatActivity {
                 Log.d("MainActivity", "Scanned");
                 TextView barcodeText = (TextView) findViewById(R.id.addBarcodeText);
                 barcodeText.setText(result.getContents());
-
-                try {
-                    String resultText="";
+                ConnectivityManager connMgr = (ConnectivityManager)
+                        getSystemService(Context.CONNECTIVITY_SERVICE);
+                NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
+                if (networkInfo != null && networkInfo.isConnected()) {
                     String urlText = "http://becklas.com/bsbapps/despensafacil/dfsearch.php?source=12579de41dd291e38ec0f9acd4a6c720";
-                    urlText = urlText.concat("q=");
+                    urlText = urlText.concat("&q=");
                     urlText = urlText.concat(barcodeText.getText().toString());
-                    URL searchURL = new URL(urlText);
-                    try {
-                        BufferedReader in = new BufferedReader(new InputStreamReader(searchURL.openStream()));
-                        String inputLine;
-                        while ((inputLine = in.readLine()) != null)
-                            resultText=resultText.concat(inputLine);
-                        in.close();
-                        TextView productText = (TextView) findViewById(R.id.productNameText);
-                        productText.setText(resultText);
-                    } catch (IOException e) {
-
-                    }
-                } catch (MalformedURLException e) {
+                    new SearchProduct().execute(urlText);
+                } else {
 
                 }
             }
         } else {
             // This is important, otherwise the result will not be passed to the fragment
             super.onActivityResult(requestCode, resultCode, data);
+        }
+    }
+
+    // Uses AsyncTask to create a task away from the main UI thread. This task takes a
+    // URL string and uses it to create an HttpUrlConnection. Once the connection
+    // has been established, the AsyncTask downloads the contents of the webpage as
+    // an InputStream. Finally, the InputStream is converted into a string, which is
+    // displayed in the UI by the AsyncTask's onPostExecute method.
+    private class SearchProduct extends AsyncTask<String, Void, String> {
+        @Override
+        protected String doInBackground(String... urlText) {
+            String resultText="";
+            // params comes from the execute() call: params[0] is the url.
+            try {
+                resultText=urlText[0].toString();
+                URL searchURL = new URL(resultText);
+                BufferedReader in = new BufferedReader(new InputStreamReader(searchURL.openStream()));
+                String inputLine;
+                resultText="";
+                while ((inputLine = in.readLine()) != null)
+                    resultText = resultText.concat(inputLine);
+                in.close();
+                return resultText;
+            } catch (MalformedURLException e) {
+                return "Unable to retrieve web page. URL may be invalid.";
+            } catch (IOException e) {
+                return "Unable to retrieve web page. URL may be invalid.";
+            }
+        }
+
+        // onPostExecute displays the results of the AsyncTask.
+        @Override
+        protected void onPostExecute(String result) {
+            TextView productText = (TextView) findViewById(R.id.productNameText);
+            productText.setText(result);
         }
     }
 }
