@@ -3,6 +3,9 @@
     package="br.com.bsbapps.despensafacil">
 
     <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
     <!-- Don't require camera, as this requires a rear camera. This allows it to work on the Nexus 7 -->
     <uses-feature
         android:name="android.hardware.camera"
@@ -39,13 +42,7 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".AddProduct">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
+        <activity android:name=".AddProductActivity" />
         <activity
             android:name="br.com.bsbapps.barcodescanner.CaptureActivity"
             android:clearTaskOnLaunch="true"
@@ -54,7 +51,12 @@
             android:theme="@style/zxing_CaptureTheme"
             android:windowSoftInputMode="stateAlwaysHidden" />
         <activity android:name=".barra_superior" />
-        <activity android:name=".MainActivity"></activity>
+        <activity android:name=".MainActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
     </application>
 
 </manifest>
