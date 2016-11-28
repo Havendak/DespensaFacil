@@ -17,6 +17,11 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    public void createList(){
+        DatabaseConnector dbConnector = new DatabaseConnector(this);
+
+    }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu){
         super.onCreateOptionsMenu(menu);

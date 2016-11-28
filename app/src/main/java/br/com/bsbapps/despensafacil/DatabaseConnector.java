@@ -1,6 +1,8 @@
 package br.com.bsbapps.despensafacil;
 
+import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 
@@ -26,5 +28,21 @@ public class DatabaseConnector {
         if(database != null) {
             database.close();
         }
+    }
+
+    public void insertList(String name) {
+        ContentValues newList = new ContentValues();
+        newList.put("name", name);
+        open();
+        database.insert("df_user_list", "user_list_name", newList);
+        close();
+    }
+
+    public Cursor getAllLists() {
+        return database.query("df_user_list", new String[] {"user_list_id", "user_list_name"}, null, null, null, null, "user_list_name");
+    }
+
+    public Cursor getList(int id){
+        return database.query("df_user_list", null, "user_list_id=" + id, null, null, null, null);
     }
 }
