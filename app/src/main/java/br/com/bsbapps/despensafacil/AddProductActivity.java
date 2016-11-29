@@ -30,6 +30,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -113,7 +115,10 @@ public class AddProductActivity extends AppCompatActivity {
                         getSystemService(Context.CONNECTIVITY_SERVICE);
                 NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
                 if (networkInfo != null && networkInfo.isConnected()) {
-                    String urlText = "http://becklas.com/bsbapps/despensafacil/dfsearch.php?source=12579de41dd291e38ec0f9acd4a6c720";
+                    SimpleDateFormat sdf = new SimpleDateFormat("ddMMyyyy");
+                    String date = sdf.format(new Date());
+                    String key = md5(md5(("dormammu".concat(date))));
+                    String urlText = "http://becklas.com/bsbapps/despensafacil/dfsearch.php?source=".concat(key);
                     urlText = urlText.concat("&q=");
                     urlText = urlText.concat(barcodeText.getText().toString());
                     new SearchProduct().execute(urlText);
@@ -125,6 +130,25 @@ public class AddProductActivity extends AppCompatActivity {
             // This is important, otherwise the result will not be passed to the fragment
             super.onActivityResult(requestCode, resultCode, data);
         }
+    }
+
+    public String md5(String s) {
+        try {
+            // Create MD5 Hash
+            MessageDigest digest = java.security.MessageDigest.getInstance("MD5");
+            digest.update(s.getBytes());
+            byte messageDigest[] = digest.digest();
+
+            // Create Hex String
+            StringBuffer hexString = new StringBuffer();
+            for (int i=0; i<messageDigest.length; i++)
+                hexString.append(Integer.toHexString(0xFF & messageDigest[i]));
+            return hexString.toString();
+
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
+        return "";
     }
 
     // Uses AsyncTask to create a task away from the main UI thread. This task takes a
@@ -150,6 +174,7 @@ public class AddProductActivity extends AppCompatActivity {
             } catch (MalformedURLException e) {
                 return "Unable to retrieve web page. URL may be invalid.";
             } catch (IOException e) {
+                e.printStackTrace();;
                 return "Unable to retrieve web page. URL may be invalid.";
             }
         }

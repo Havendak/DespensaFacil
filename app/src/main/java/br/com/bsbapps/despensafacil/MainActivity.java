@@ -60,7 +60,7 @@ public class MainActivity extends AppCompatActivity {
         protected void onPostExecute(Cursor result){
             super.onPostExecute(result);
             Long id;
-            if(result == null) {
+            if(result.getCount() == 0) {
                 id = dbConnector.insertList("Primeira Lista", true);
             } else {
                 result.moveToFirst();

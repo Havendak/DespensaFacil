@@ -23,6 +23,7 @@ public class DatabaseConnector {
     private DatabaseOpenHelper dbOpenHelper;
 
     public DatabaseConnector(Context context){
+        context.deleteDatabase(DATABASE_NAME);
         dbOpenHelper = new DatabaseOpenHelper(context, DATABASE_NAME, null, DB_CURRENT_VERSION);
     }
 
@@ -55,7 +56,7 @@ public class DatabaseConnector {
     }
 
     public Cursor getDefaultList() {
-        return database.query("df_user_list", null, "default_list=true", null, null, null, null);
+        return database.query("df_user_list", null, "default_list=1", null, null, null, null);
     }
 
     public void insertProduct(String barcode, String product) {
