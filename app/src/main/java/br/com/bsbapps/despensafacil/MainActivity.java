@@ -5,15 +5,23 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.AsyncTask;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.widget.Toast;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class MainActivity extends AppCompatActivity {
+    DatabaseHelper banco;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -22,6 +30,8 @@ public class MainActivity extends AppCompatActivity {
 
         new createFirstList().execute(new Long[] {null});
 
+        banco = new DatabaseHelper(this);
+        testaTabela(banco.getReadableDatabase());
     }
 
     @Override
@@ -75,4 +85,19 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    private void testaTabela(SQLiteDatabase db) {
+
+        Cursor cursor = db.rawQuery("select NOME_PRODUTO from PRODUTO",null);
+
+        cursor.moveToFirst();
+        List<String> produto = new ArrayList<String>();
+        while(!cursor.isAfterLast()) {
+            produto.add(cursor.getString(cursor.getColumnIndex("NOME_PRODUTO")));//add the item
+            cursor.moveToNext();
+        }
+        cursor.close();
+        if(produto.size()>1) {
+            Toast.makeText(this, produto.get(1), Toast.LENGTH_LONG).show();
+        }
+    }
 }

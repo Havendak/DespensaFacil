@@ -5,5 +5,15 @@
     tools:context="layout.MainFragment">
 
     <!-- TODO: Update blank fragment layout -->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:text="Teste" />
+    <Button
+        android:text="Captura Código de Barras"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/button2"
+        android:onClick="abreCaptureBarCode"/>
 
 </FrameLayout>
