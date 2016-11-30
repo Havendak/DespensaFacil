@@ -38,7 +38,7 @@ import br.com.bsbapps.util.SecurityToken;
 
 public class AddProductActivity extends AppCompatActivity {
     // Armazena a lista atualmente selecionada pelo usuário
-    Long currentList;
+    int currentList;
 
     // Objetos utilizados no layout
     private EditText barcodeEditText;
@@ -58,7 +58,7 @@ public class AddProductActivity extends AppCompatActivity {
 
         // Captura código da lista selecionada atualmente
         SharedPreferences sharedPref = getPreferences(Context.MODE_PRIVATE);
-        currentList = sharedPref.getLong("br.com.bsbapps.despensafacil.CURRENT_LIST_ID", 1);
+        currentList = sharedPref.getInt("br.com.bsbapps.despensafacil.CURRENT_LIST_ID", 1);
 
         // Instancia os objetos do layout com os quais o código irá interagir
         barcodeEditText = (EditText) findViewById(R.id.addBarcodeText);

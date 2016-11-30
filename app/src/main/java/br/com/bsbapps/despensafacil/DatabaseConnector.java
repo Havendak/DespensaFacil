@@ -86,7 +86,7 @@ public class DatabaseConnector {
         return database.query("df_product", null, "barcode='" + barcode + "'", null, null, null, null);
     }
 
-    public void insertProductOnList(Long list, String barcode, int quantity, Date duedate) {
+    public void insertProductOnList(int list, String barcode, int quantity, Date duedate) {
         ContentValues newListProduct = new ContentValues();
         newListProduct.put("user_list_id", list);
         newListProduct.put("barcode", barcode);
@@ -100,11 +100,11 @@ public class DatabaseConnector {
 
     }
 
-    public Cursor getAllListProducts(Long list) {
-        return database.query("df_list_product", new String[] {"user_list_id", "barcode", "quantity", "due_Date"}, "user_list_id=" + list.toString(), null, null, null, "product_name");
+    public Cursor getAllListProducts(int list) {
+        return database.query("df_list_product", new String[] {"user_list_id", "barcode", "quantity", "due_Date"}, "user_list_id=" + list, null, null, null, "product_name");
     }
 
-    public Cursor getListProduct(Long list, String barcode){
-        return database.query("df_list_product", null, "user_list_id=" + list.toString() + " AND barcode='" + barcode + "'", null, null, null, null);
+    public Cursor getListProduct(int list, String barcode){
+        return database.query("df_list_product", null, "user_list_id=" + list + " AND barcode='" + barcode + "'", null, null, null, null);
     }
 }

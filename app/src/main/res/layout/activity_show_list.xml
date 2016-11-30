@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:text="Controle de Despensa"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textAlignment="center"
+        android:id="@+id/textViewTitulo" />
+
+    <SearchView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:queryHint="Busque aqui"
+        android:id="@+id/searchViewProdutos"/>
+
+
+
+    <LinearLayout
+        android:id="@+id/linearLayoutTitulos"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            android:text="Nome"
+            android:layout_width="0dp"
+            android:layout_weight=".33"
+            android:layout_height="wrap_content"
+            android:textAlignment="center"
+            android:id="@+id/textViewTituloTabela1" />
+
+        <TextView
+            android:text="Quantidade"
+            android:layout_width="0dp"
+            android:layout_weight=".23"
+            android:layout_height="wrap_content"
+            android:textAlignment="center"
+            android:id="@+id/textViewTituloTabela2" />
+
+        <TextView
+            android:text="Validade"
+            android:layout_width="0dp"
+            android:layout_weight=".27"
+            android:layout_height="wrap_content"
+            android:textAlignment="center"
+            android:id="@+id/textViewTituloTabela3" />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_weight=".17"
+            android:layout_height="wrap_content"
+            android:textAlignment="center"
+            android:id="@+id/textViewTituloTabela4" />
+
+    </LinearLayout>
+
+
+
+    <RelativeLayout
+        android:id="@+id/relativeLayoutListBtn"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <ListView
+            android:id="@+id/listViewProdutos"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"/>
+
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/addBtn"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
+            android:layout_marginRight="24dp"
+            android:layout_marginEnd="24dp"
+            android:layout_marginBottom="24dp"
+            android:src="@android:drawable/ic_input_add"
+            android:scaleType="fitCenter"
+            app:elevation="7dp"
+            android:layout_width="56dp"
+            android:layout_height="56dp"
+            app:fabSize="auto"/>
+    </RelativeLayout>
+
+</LinearLayout>
