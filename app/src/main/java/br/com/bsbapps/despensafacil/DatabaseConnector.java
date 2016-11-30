@@ -6,11 +6,8 @@ import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-
-import static android.R.attr.name;
 
 /**
  * Created by Andre Becklas on 28/11/2016.
@@ -23,7 +20,11 @@ public class DatabaseConnector {
     private DatabaseOpenHelper dbOpenHelper;
 
     public DatabaseConnector(Context context){
-        context.deleteDatabase(DATABASE_NAME);
+        try{
+            context.deleteDatabase(DATABASE_NAME);
+        } catch (NullPointerException e){
+
+        }
         dbOpenHelper = new DatabaseOpenHelper(context, DATABASE_NAME, null, DB_CURRENT_VERSION);
     }
 
@@ -37,7 +38,7 @@ public class DatabaseConnector {
         }
     }
 
-    public Long insertList(String name, Boolean defList) {
+    public Long insertList(String name, int defList) {
         ContentValues newList = new ContentValues();
         newList.put("user_list_name", name);
         newList.put("default_list", defList);
@@ -66,6 +67,14 @@ public class DatabaseConnector {
         newProduct.put("product_status", 0);
         open();
         database.insert("df_product", null, newProduct);
+        close();
+    }
+
+    public void updateProduct(String barcode, String product) {
+        ContentValues newProduct = new ContentValues();
+        newProduct.put("product_name", product);
+        open();
+        database.update("df_product", newProduct, "barcode='" + barcode + "'", null);
         close();
     }
 

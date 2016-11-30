@@ -1,4 +1,4 @@
-package util;
+package br.com.bsbapps.util;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;

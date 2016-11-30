@@ -30,8 +30,6 @@ public class MainActivity extends AppCompatActivity {
 
         new createFirstList().execute(new Long[] {null});
 
-        banco = new DatabaseHelper(this);
-        testaTabela(banco.getReadableDatabase());
     }
 
     @Override
@@ -71,7 +69,7 @@ public class MainActivity extends AppCompatActivity {
             super.onPostExecute(result);
             Long id;
             if(result.getCount() == 0) {
-                id = dbConnector.insertList("Primeira Lista", true);
+                id = dbConnector.insertList("Primeira Lista", 1);
             } else {
                 result.moveToFirst();
                 id = result.getLong(result.getColumnIndex("user_list_id"));

@@ -4,7 +4,7 @@ import android.content.ContentValues;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
-import util.DT;
+import br.com.bsbapps.util.DT;
 
 /**
  * Created by proca on 28/11/2016.

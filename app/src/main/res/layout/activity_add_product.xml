@@ -12,12 +12,9 @@
         android:ems="10"
         android:id="@+id/addBarcodeText"
         android:hint="Código de Barras"
-        android:layout_marginTop="28dp"
         android:layout_alignParentTop="true"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:layout_marginLeft="11dp"
-        android:layout_marginStart="11dp"
         android:inputType="text" />
 
     <Button
@@ -32,15 +29,12 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:inputType="textPersonName"
-        android:ems="10"
         android:id="@+id/productNameText"
         android:hint="Nome do produto"
-        android:layout_marginTop="28dp"
         android:layout_alignParentTop="true"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:layout_marginLeft="11dp"
-        android:layout_marginStart="11dp" />
+        android:ems="10" />
 
     <EditText
         android:layout_width="match_parent"

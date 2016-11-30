@@ -9,14 +9,9 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
-import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -30,36 +25,50 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import br.com.bsbapps.util.DateHandler;
+import br.com.bsbapps.util.SecurityToken;
+
+/**
+ * Created by André Becklas on 28/11/2016.
+ *
+ * Classe da activity de edição de produto
+ */
 
 public class AddProductActivity extends AppCompatActivity {
+    // Armazena a lista atualmente selecionada pelo usuário
     Long currentList;
 
+    // Objetos utilizados no layout
     private EditText barcodeEditText;
     private EditText productEditText;
     private EditText quantityEditText;
     private EditText dueDateEditText;
 
+    DatabaseConnector dbConnector = new DatabaseConnector(this);
+    Cursor query;
+
+    // Método OnCreate
+    // Chamado na criação da activity, antes da exibição na tela
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_product);
 
+        // Captura código da lista selecionada atualmente
         SharedPreferences sharedPref = getPreferences(Context.MODE_PRIVATE);
         currentList = sharedPref.getLong("br.com.bsbapps.despensafacil.CURRENT_LIST_ID", 1);
 
+        // Instancia os objetos do layout com os quais o código irá interagir
         barcodeEditText = (EditText) findViewById(R.id.addBarcodeText);
         productEditText = (EditText) findViewById(R.id.productNameText);
         quantityEditText = (EditText) findViewById(R.id.quantityText);
         dueDateEditText= (EditText) findViewById(R.id.dueDateText);
 
+        // Verifica e captura se há valores passados para esta activity através do Bundle
+        // Serve para passar os valores de um produto selecionado e permitir a edição dele
         Bundle extras = getIntent().getExtras();
-
         if (extras!=null){
             barcodeEditText.setText(extras.getString("barcode"));
             productEditText.setText(extras.getString("product"));
@@ -68,6 +77,8 @@ public class AddProductActivity extends AppCompatActivity {
         }
     }
 
+    // Método scanBarcode
+    // Inicia a intent da câmera - integração com a lib zxing
     public void scanBarcode(View view) {
         new IntentIntegrator(this).initiateScan();
     }
@@ -100,31 +111,71 @@ public class AddProductActivity extends AppCompatActivity {
         integrator.initiateScan();
     }
 
+    // Metodo onActivityResult
+    // Recebe um resultado da intent de câmera
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        // Armazena o resultado da intent de câmera
         IntentResult result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
-        if(result != null) {
-            if(result.getContents() == null) {
-                Log.d("MainActivity", "Cancelled scan");
-                Toast.makeText(this, "Cancelled", Toast.LENGTH_LONG).show();
-            } else {
-                Log.d("MainActivity", "Scanned");
-                TextView barcodeText = (TextView) findViewById(R.id.addBarcodeText);
-                barcodeText.setText(result.getContents());
-                ConnectivityManager connMgr = (ConnectivityManager)
-                        getSystemService(Context.CONNECTIVITY_SERVICE);
-                NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
-                if (networkInfo != null && networkInfo.isConnected()) {
-                    SimpleDateFormat sdf = new SimpleDateFormat("ddMMyyyy");
-                    String date = sdf.format(new Date());
-                    String key = md5(md5(("dormammu".concat(date))));
-                    String urlText = "http://becklas.com/bsbapps/despensafacil/dfsearch.php?source=".concat(key);
-                    urlText = urlText.concat("&q=");
-                    urlText = urlText.concat(barcodeText.getText().toString());
-                    new SearchProduct().execute(urlText);
-                } else {
 
+        // Variáveis locais
+        int product_status=0;
+        String product_name="Produto em atualização";
+
+        // Se o resultado da intent da câmera não for nulo
+        if(result != null) {
+            // Se o conteúdo for nulo, houve um cancelamento da digitalização
+            if(result.getContents() == null) {
+                // Exibe mensagem de cancelamento ao usuário num Toast e grava em log
+                Log.d("AddProductActivity", "Leitura do código de barras cancelada");
+                Toast.makeText(this, "Leitura do código de barras cancelada",
+                        Toast.LENGTH_LONG).show();
+            } else {
+                // Grava mensagem de sucesso em log
+                Log.d("AddProductActivity", "Leitura do código de barras com sucesso");
+
+                // Exibe código de barras capturado no campo
+                barcodeEditText.setText(result.getContents());
+
+                // Verifica se o produto existe na base local
+                dbConnector.open();
+                query = dbConnector.getProduct(barcodeEditText.getText().toString());
+                if(query != null){
+                    if (query.getCount()!=0) {
+                        // Se o produto existir, captura o nome e status
+                        query.moveToFirst();
+                        product_status = query.getInt(query.getColumnIndex("product_status"));
+                        product_name = query.getString(query.getColumnIndex("product_name"));
+                    }
                 }
+
+                // Se o status = 0 (produto não validado), se o usuário tiver internet habilitada
+                // chama o serviço de pesquisa de produto
+                if (product_status==0) {
+                    // Instancia o serviço de comunicação
+                    ConnectivityManager connMgr = (ConnectivityManager)
+                            getSystemService(Context.CONNECTIVITY_SERVICE);
+                    NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
+                    // Se houver internet habilitada
+                    if (networkInfo != null && networkInfo.isConnected()) {
+                        // Monta token de validação para chamada do serviço
+                        String key = new SecurityToken().getKey();
+                        // Monta url de chamada do serviço passando os parâmetros
+                        String urlText = "http://becklas.com/bsbapps/despensafacil/dfsearch.php";
+                        urlText = urlText.concat("?source=");
+                        urlText = urlText.concat(key);
+                        urlText = urlText.concat("&q=");
+                        urlText = urlText.concat(barcodeEditText.getText().toString());
+                        // Chama método assíncrono de pesquisa de produto
+                        new SearchProduct().execute(urlText);
+                        return;
+                    }
+                }
+                // Se o produto existir na base local e estiver valido (status=1), seu nome local
+                // será exibido.
+                // Se o produto existir mas não estiver validado (status=0) e não houver internet
+                // habilitada, seu nome local será exibido
+                productEditText.setText(product_name);
             }
         } else {
             // This is important, otherwise the result will not be passed to the fragment
@@ -132,39 +183,21 @@ public class AddProductActivity extends AppCompatActivity {
         }
     }
 
-    public String md5(String s) {
-        try {
-            // Create MD5 Hash
-            MessageDigest digest = java.security.MessageDigest.getInstance("MD5");
-            digest.update(s.getBytes());
-            byte messageDigest[] = digest.digest();
 
-            // Create Hex String
-            StringBuffer hexString = new StringBuffer();
-            for (int i=0; i<messageDigest.length; i++)
-                hexString.append(Integer.toHexString(0xFF & messageDigest[i]));
-            return hexString.toString();
 
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-        }
-        return "";
-    }
-
-    // Uses AsyncTask to create a task away from the main UI thread. This task takes a
-    // URL string and uses it to create an HttpUrlConnection. Once the connection
-    // has been established, the AsyncTask downloads the contents of the webpage as
-    // an InputStream. Finally, the InputStream is converted into a string, which is
-    // displayed in the UI by the AsyncTask's onPostExecute method.
+    // Metódo assincrono de pesquisa de produto
+    // Lê conteudo de uma url
     private class SearchProduct extends AsyncTask<String, Void, String> {
         @Override
         protected String doInBackground(String... urlText) {
             String resultText="";
-            // params comes from the execute() call: params[0] is the url.
+            // Tenta abrir a URL e lê seu conteúdo.
             try {
-                resultText=urlText[0].toString();
+                // urlText recebe um array de Strings com apenas um resultado
+                resultText=urlText[0];
                 URL searchURL = new URL(resultText);
-                BufferedReader in = new BufferedReader(new InputStreamReader(searchURL.openStream()));
+                BufferedReader in = new BufferedReader(
+                        new InputStreamReader(searchURL.openStream()));
                 String inputLine;
                 resultText="";
                 while ((inputLine = in.readLine()) != null)
@@ -179,15 +212,16 @@ public class AddProductActivity extends AppCompatActivity {
             }
         }
 
-        // onPostExecute displays the results of the AsyncTask.
+        // Captura o resultado da AsyncTask.
         @Override
         protected void onPostExecute(String result) {
+            // Mostra o nome do produto capturado
             TextView productText = (TextView) findViewById(R.id.productNameText);
             productText.setText(result);
         }
     }
 
-    private void saveProductOnList() {
+    public void saveProductOnList(View view) {
         if (barcodeEditText.getText().length() != 0) {
             AsyncTask<Object, Object, Object> saveProductTask =
                     new AsyncTask<Object, Object, Object>() {
@@ -202,29 +236,25 @@ public class AddProductActivity extends AppCompatActivity {
                             finish();
                         }
                     };
+            saveProductTask.execute();
         }
     }
 
     private void saveProduct(){
-        DatabaseConnector dbConnector = new DatabaseConnector(this);
-        Cursor query;
         if (getIntent().getExtras()==null){
             dbConnector.open();
             query = dbConnector.getProduct(barcodeEditText.getText().toString());
-            if(query == null){
-                dbConnector.insertProduct(barcodeEditText.getText().toString(), productEditText.getText().toString());
+            if(query == null || query.getCount()==0){
+                dbConnector.insertProduct(barcodeEditText.getText().toString(),
+                        productEditText.getText().toString());
+            } else {
+                dbConnector.updateProduct(barcodeEditText.getText().toString(),
+                        productEditText.getText().toString());
             }
+            query.close();
+            Date dateObject = new DateHandler().getDate("dd/MM/yyyy",
+                    dueDateEditText.getText().toString());
 
-            DateFormat formatter = new SimpleDateFormat("dd/MM/yyyy"); // Make sure user insert date into edittext in this format.
-            Date dateObject = new Date();
-            try{
-                String dob_var=(dueDateEditText.getText().toString());
-                dateObject = formatter.parse(dob_var);
-            }
-            catch (java.text.ParseException e)
-            {
-                e.printStackTrace();
-            }
             dbConnector.insertProductOnList(currentList, barcodeEditText.getText().toString(),
                     Integer.parseInt(quantityEditText.getText().toString()),dateObject);
 
