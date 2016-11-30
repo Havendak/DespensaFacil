@@ -20,11 +20,11 @@ public class DatabaseConnector {
     private DatabaseOpenHelper dbOpenHelper;
 
     public DatabaseConnector(Context context){
-        try{
+        /*try{
             context.deleteDatabase(DATABASE_NAME);
         } catch (NullPointerException e){
 
-        }
+        }*/
         dbOpenHelper = new DatabaseOpenHelper(context, DATABASE_NAME, null, DB_CURRENT_VERSION);
     }
 
@@ -101,7 +101,10 @@ public class DatabaseConnector {
     }
 
     public Cursor getAllListProducts(int list) {
-        return database.query("df_list_product", new String[] {"user_list_id", "barcode", "quantity", "due_Date"}, "user_list_id=" + list, null, null, null, "product_name");
+        String sql = "SELECT A.user_list_id, A.barcode, B.product_name, A.quantity, A.due_date " +
+                "FROM df_list_product A INNER JOIN df_product B ON B.barcode = A.barcode " +
+                "WHERE A.user_list_id = ? ORDER BY B.product_name";
+        return database.rawQuery(sql,new String[]{String.valueOf(list)});
     }
 
     public Cursor getListProduct(int list, String barcode){

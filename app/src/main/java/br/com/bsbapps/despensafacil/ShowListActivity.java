@@ -11,6 +11,9 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.CursorAdapter;
@@ -18,9 +21,9 @@ import android.widget.ListView;
 import android.widget.SearchView;
 import android.widget.SimpleCursorAdapter;
 
-public class ShowListActivity extends ListActivity  {
+public class ShowListActivity extends AppCompatActivity  {
     //implements SearchView.OnQueryTextListener
-    private SearchView busca;
+    //private SearchView busca;
     private ListView productListView;
     private CursorAdapter productListAdapter;
     private int currentList;
@@ -36,9 +39,9 @@ public class ShowListActivity extends ListActivity  {
 
 
         //instancia objetos
-        busca = (SearchView) findViewById(R.id.searchViewProdutos); //instancia caixa de busca
+        //busca = (SearchView) findViewById(R.id.searchViewProdutos); //instancia caixa de busca
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.addBtn);
-        productListView = getListView();
+        productListView = (ListView) findViewById(R.id.productListView);
 
         //preenche lista
         //ListViewAdapter adapter=new ListViewAdapter(this, list);
@@ -46,8 +49,8 @@ public class ShowListActivity extends ListActivity  {
         String[] from = new String[]{"product_name", "quantity", "due_date"};
         int[] to = new int[]{R.id.showListProductNameTextView, R.id.showListQuantityTextView, R.id.showListDueDateTextView};
         CursorAdapter productListAdapter = new SimpleCursorAdapter(
-                ShowListActivity.this, R.id.listViewProdutos, null, from, to, 0);
-        setListAdapter(productListAdapter);
+                ShowListActivity.this, R.layout.product_list_item, null, from, to, 0);
+        productListView.setAdapter(productListAdapter);
 
         //evento ao clicar no botão add
         fab.setOnClickListener(new View.OnClickListener() {
@@ -58,6 +61,29 @@ public class ShowListActivity extends ListActivity  {
     }
 
     @Override
+    public boolean onCreateOptionsMenu(Menu menu){
+        super.onCreateOptionsMenu(menu);
+        MenuInflater inflater = getMenuInflater();
+
+        inflater.inflate(R.menu.menu_main_action, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item){
+        if (item.getItemId()==R.id.menu_main_action_dashboard) {
+            startActivity(new Intent(getApplicationContext(), MainActivity.class));
+        }
+        if (item.getItemId()==R.id.menu_main_action_lists) {
+            startActivity(new Intent(getApplicationContext(), ShowListActivity.class));
+        }
+        if (item.getItemId()==R.id.menu_main_action_add_product) {
+            startActivity(new Intent(getApplicationContext(), AddProductActivity.class));
+        }
+        return true;
+    }
+
+    @Override
     protected void onResume() {
         super.onResume();
         new GetProductTask().execute((Object[]) null);
@@ -65,9 +91,9 @@ public class ShowListActivity extends ListActivity  {
 
     @Override
     protected void onStop() {
-        Cursor cursor = productListAdapter.getCursor();
-        productListAdapter.changeCursor(null);
-        cursor.close();
+        //Cursor cursor = productListAdapter.getCursor();
+        //productListAdapter.changeCursor(null);
+        //cursor.close();
         super.onStop();
     }
 
