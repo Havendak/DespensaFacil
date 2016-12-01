@@ -100,8 +100,15 @@ public class DatabaseConnector {
 
     }
 
+    public void incrementQuantity(int list, String barcode, Date duedate, int quantity) {
+        String sql = "UPDATE df_list_product SET quantity=quantity + ? WHERE user_list_id=? and barcode = '?' and due_date='?'";
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        String date = sdf.format(duedate);
+        database.rawQuery(sql,new String[]{String.valueOf(quantity), String.valueOf(list), String.valueOf(barcode), String.valueOf(date)});
+    }
+
     public Cursor getAllListProducts(int list) {
-        String sql = "SELECT A.user_list_id, A.barcode, B.product_name, A.quantity, A.due_date " +
+        String sql = "SELECT A._id, A.user_list_id, A.barcode, B.product_name, A.quantity, A.due_date " +
                 "FROM df_list_product A INNER JOIN df_product B ON B.barcode = A.barcode " +
                 "WHERE A.user_list_id = ? ORDER BY B.product_name";
         return database.rawQuery(sql,new String[]{String.valueOf(list)});
@@ -109,5 +116,11 @@ public class DatabaseConnector {
 
     public Cursor getListProduct(int list, String barcode){
         return database.query("df_list_product", null, "user_list_id=" + list + " AND barcode='" + barcode + "'", null, null, null, null);
+    }
+
+    public Cursor getExistentListProduct(int list, String barcode, Date duedate){
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        String date = sdf.format(duedate);
+        return database.query("df_list_product", null, "user_list_id=" + list + " AND barcode='" + barcode + "' AND due_date='" + date + "'", null, null, null, null);
     }
 }

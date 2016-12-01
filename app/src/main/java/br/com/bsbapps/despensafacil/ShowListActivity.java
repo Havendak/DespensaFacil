@@ -25,7 +25,7 @@ public class ShowListActivity extends AppCompatActivity  {
     //implements SearchView.OnQueryTextListener
     //private SearchView busca;
     private ListView productListView;
-    private CursorAdapter productListAdapter;
+    private SimpleCursorAdapter productListAdapter;
     private int currentList;
 
     @Override
@@ -48,7 +48,7 @@ public class ShowListActivity extends AppCompatActivity  {
         //lista.setAdapter(adapter);
         String[] from = new String[]{"product_name", "quantity", "due_date"};
         int[] to = new int[]{R.id.showListProductNameTextView, R.id.showListQuantityTextView, R.id.showListDueDateTextView};
-        CursorAdapter productListAdapter = new SimpleCursorAdapter(
+        productListAdapter = new SimpleCursorAdapter(
                 ShowListActivity.this, R.layout.product_list_item, null, from, to, 0);
         productListView.setAdapter(productListAdapter);
 
@@ -91,9 +91,8 @@ public class ShowListActivity extends AppCompatActivity  {
 
     @Override
     protected void onStop() {
-        //Cursor cursor = productListAdapter.getCursor();
-        //productListAdapter.changeCursor(null);
-        //cursor.close();
+        Cursor cursor = productListAdapter.getCursor();
+        productListAdapter.changeCursor(null);
         super.onStop();
     }
 

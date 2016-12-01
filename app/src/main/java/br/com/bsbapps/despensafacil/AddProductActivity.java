@@ -251,13 +251,20 @@ public class AddProductActivity extends AppCompatActivity {
                 dbConnector.updateProduct(barcodeEditText.getText().toString(),
                         productEditText.getText().toString());
             }
-            query.close();
+
             Date dateObject = new DateHandler().getDate("dd/MM/yyyy",
                     dueDateEditText.getText().toString());
 
-            dbConnector.insertProductOnList(currentList, barcodeEditText.getText().toString(),
-                    Integer.parseInt(quantityEditText.getText().toString()),dateObject);
-
+            dbConnector.open();
+            query = dbConnector.getExistentListProduct(currentList,
+                    barcodeEditText.getText().toString(), dateObject);
+            if(query == null || query.getCount()==0) {
+                dbConnector.insertProductOnList(currentList, barcodeEditText.getText().toString(),
+                        Integer.parseInt(quantityEditText.getText().toString()), dateObject);
+            } else {
+                dbConnector.incrementQuantity(currentList, barcodeEditText.getText().toString(), dateObject,1);
+            }
+            query.close();
         }
     }
 }

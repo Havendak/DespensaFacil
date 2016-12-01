@@ -32,12 +32,12 @@ public class DatabaseOpenHelper extends SQLiteOpenHelper {
 
         //Criação da tabela df_list_product
         createQuery="CREATE TABLE df_list_product (" +
-                "    user_list_id BIGINT NOT NULL, " +
+                "    _id INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                "    user_list_id INTEGER NOT NULL, " +
                 "    barcode varch(30) NOT NULL, " +
                 "    quantity INT DEFAULT 0, " +
                 "    due_date DATE NOT NULL, " +
-                "    product_status tinYINT DEFAULT 0, " +
-                "    PRIMARY KEY(user_list_id, barcode));";
+                "    product_status tinyint DEFAULT 0);";
         db.execSQL(createQuery);
 
     }
