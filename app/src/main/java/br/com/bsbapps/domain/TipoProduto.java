@@ -32,7 +32,7 @@ public class TipoProduto {
     public static String createTable()  {
         return "CREATE TABLE IF NOT EXISTS TIPO" +
                 "(" +
-                "ID_TIPO primary key autoincrement           INT NOT NULL," +
+                "ID_TIPO INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL," +
                 "NOME_TIPO          TEXT NOT NULL" +
                 ")";
     }

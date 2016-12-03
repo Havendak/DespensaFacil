@@ -32,7 +32,7 @@ public class Medida {
     public static String createTable() {
         return "CREATE TABLE IF NOT EXISTS MEDIDA" +
                 "(" +
-                "ID_MEDIDA primary key autoincrement           INT NOT NULL," +
+                "ID_MEDIDA INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL," +
                 "NOME_MEDIDA          TEXT NULL" +
                 ")";
 

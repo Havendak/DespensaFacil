@@ -14,7 +14,7 @@ public class SubTipoProduto {
     public static String createTable() {
         return "CREATE TABLE SUBTIPO" +
                 "(" +
-                "ID_SUBTIPO  primary key autoincrement  INT NOT NULL," +
+                "ID_SUBTIPO  INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL," +
                 "ID_TIPO   INT NOT NULL," +
                 "NOME_SUBTIPO       TEXT NOT NULL" +
                 ")";
