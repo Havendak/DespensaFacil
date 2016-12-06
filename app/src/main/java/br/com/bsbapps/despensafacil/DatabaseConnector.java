@@ -100,6 +100,11 @@ public class DatabaseConnector {
 
     }
 
+    public void deleteProductFromList(int list, String barcode) {
+        String sql = "DELETE FROM df_list_product WHERE list=? AND barcode='?'";
+        database.rawQuery(sql,new String[]{String.valueOf(list),String.valueOf(barcode)});
+    }
+
     public void incrementQuantity(int list, String barcode, Date duedate, int quantity) {
         String sql = "UPDATE df_list_product SET quantity=quantity + ? WHERE user_list_id=? and barcode = '?' and due_date='?'";
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");

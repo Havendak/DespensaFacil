@@ -4,11 +4,21 @@
     android:layout_height="match_parent"
     android:orientation="horizontal">
 
+  <TextView
+      android:text="TextView"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:visibility="gone"
+      android:id="@+id/showListBarcodeTextView"/>
+
     <TextView
         android:text="TextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/showListProductNameTextView"
+        android:padding="8dp"
+        android:textSize="20sp"
+        android:minHeight="?android:attr/listPreferredItemHeight"
         android:layout_weight="1" />
 
     <TextView
@@ -16,6 +26,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/showListQuantityTextView"
+        android:padding="8dp"
+        android:textSize="20sp"
+        android:minHeight="?android:attr/listPreferredItemHeight"
         android:layout_weight="1" />
 
     <TextView
@@ -23,5 +36,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/showListDueDateTextView"
+        android:padding="8dp"
+        android:textSize="20sp"
+        android:minHeight="?android:attr/listPreferredItemHeight"
         android:layout_weight="1" />
 </LinearLayout>

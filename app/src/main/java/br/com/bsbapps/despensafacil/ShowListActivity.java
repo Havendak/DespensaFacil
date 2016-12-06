@@ -1,7 +1,5 @@
 package br.com.bsbapps.despensafacil;
 
-import android.app.Activity;
-import android.app.ListActivity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -10,16 +8,17 @@ import android.os.AsyncTask;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.text.TextUtils;
+import android.util.Log;
+import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.CursorAdapter;
+import android.widget.EditText;
 import android.widget.ListView;
-import android.widget.SearchView;
 import android.widget.SimpleCursorAdapter;
+import android.widget.TextView;
 
 public class ShowListActivity extends AppCompatActivity  {
     //implements SearchView.OnQueryTextListener
@@ -27,6 +26,7 @@ public class ShowListActivity extends AppCompatActivity  {
     private ListView productListView;
     private SimpleCursorAdapter productListAdapter;
     private int currentList;
+    AdapterView.AdapterContextMenuInfo menuinfo = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,8 +46,8 @@ public class ShowListActivity extends AppCompatActivity  {
         //preenche lista
         //ListViewAdapter adapter=new ListViewAdapter(this, list);
         //lista.setAdapter(adapter);
-        String[] from = new String[]{"product_name", "quantity", "due_date"};
-        int[] to = new int[]{R.id.showListProductNameTextView, R.id.showListQuantityTextView, R.id.showListDueDateTextView};
+        String[] from = new String[]{"barcode", "product_name", "quantity", "due_date"};
+        int[] to = new int[]{R.id.showListBarcodeTextView, R.id.showListProductNameTextView, R.id.showListQuantityTextView, R.id.showListDueDateTextView};
         productListAdapter = new SimpleCursorAdapter(
                 ShowListActivity.this, R.layout.product_list_item, null, from, to, 0);
         productListView.setAdapter(productListAdapter);
@@ -58,6 +58,9 @@ public class ShowListActivity extends AppCompatActivity  {
                 startActivity(new Intent(getApplicationContext(), AddProductActivity.class));
             }
         });
+
+        //cria menu de contexto da list
+        registerForContextMenu(productListView);
     }
 
     @Override
@@ -112,7 +115,30 @@ public class ShowListActivity extends AppCompatActivity  {
         }
     }
 
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v,ContextMenu.ContextMenuInfo menuInfo) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu_context_product_list,menu);
+        menuinfo = (AdapterView.AdapterContextMenuInfo) menuInfo;
+        menu.clearHeader();
+    }
 
+    @Override
+    public boolean onContextItemSelected(MenuItem item) {
+        menuinfo = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
+        AdapterView.AdapterContextMenuInfo info= (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
+        String barcode = ((TextView) info.targetView.findViewById(R.id.showListBarcodeTextView)).getText().toString();
+        switch (item.getTitle().toString()) {
+            case "Excluir":
+                DatabaseConnector dbConnector = new DatabaseConnector(ShowListActivity.this);
+                dbConnector.open();
+                dbConnector.deleteProductFromList(currentList, barcode);
+                dbConnector.close();
+                return true;
+           default:
+                return super.onContextItemSelected(item);
+        }
+    }
 
 /* A PARTIR DAQUI, TESTES PARA SEARCHVIEW
 

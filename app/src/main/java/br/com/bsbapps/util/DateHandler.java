@@ -64,6 +64,4 @@ public class DateHandler {
         Date resultdate = new Date(data);
         return sdf.format(resultdate);
     }
-
-
 }
