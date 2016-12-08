@@ -1,75 +1,93 @@
 package br.com.bsbapps.despensafacil;
 
 import android.content.Context;
-import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.util.Log;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import br.com.bsbapps.domain.GroceryList;
-
-import br.com.bsbapps.domain.PantryItem;
-import br.com.bsbapps.domain.PantryList;
-import br.com.bsbapps.domain.Product;
-
 
 /**
  * Created by Andre Becklas on 28/11/2016.
- * Alterado por Procaci em 03/12/2016
- *      - iseridas as criações de tabelas para os objetos PantryList, GroceryList e Produt
- *      - inserido o metodo de exemplo de insert populaTabelas
+ *
+ * Cria conexão com o banco de dados e gerencia estrutura das tabelas
  */
 
 public class DatabaseOpenHelper extends SQLiteOpenHelper {
+    String createQuery;
 
-    public DatabaseOpenHelper(Context context, String name, SQLiteDatabase.CursorFactory factory, int version){
-        super(context, name, factory, version);
+    // Tabelas
+    public static final String TABLE_PRODUCT = "product";
+    public static final String TABLE_PANTRY_ITEM = "pantry_item";
+    public static final String TABLE_PANTRY_LIST = "pantry_list";
+
+    // Colunas
+    public static final String COLUMN_ID = "_id";
+    public static final String COLUMN_BARCODE = "barcode";
+    public static final String COLUMN_PRODUCT_NAME = "product_name";
+    public static final String COLUMN_METRIC_UNITY_ID = "metric_unit_id";
+    public static final String COLUMN_QUANTITY = "quantity";
+    public static final String COLUMN_DESCRIPTION = "description";
+    public static final String COLUMN_TYPE_ID = "type_id";
+    public static final String COLUMN_SUBTYPE_ID = "subtype_id";
+    public static final String COLUMN_FAVORITE = "favorite";
+    public static final String COLUMN_STATUS = "status";
+    public static final String COLUMN_DUE_DATE = "due_date";
+    public static final String COLUMN_BUY_DATE = "buy_date";
+    public static final String COLUMN_LIST_ID = "list_id";
+    public static final String COLUMN_LIST_NAME = "list_name";
+
+    // Database
+    private static final String DATABASE_NAME = "despensafacil.db";
+    private static final int DATABASE_VERSION = 1;
+
+    public DatabaseOpenHelper(Context context){
+        super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
 
     @Override
     public void onCreate(SQLiteDatabase db){
-
-        db.execSQL(PantryList.createTable());
-        db.execSQL(GroceryList.createTable());
-
-        db.execSQL(Product.createTable());
-
-
-
-        //Criação da tabela df_user_list
-        String createQuery="CREATE TABLE df_user_list (" +
-                "    user_list_id INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                "    user_list_name VARCHAR(50), " +
-                "    default_list BOOL NOT NULL DEFAULT false);";
+        //Criação da tabela product
+        createQuery="CREATE TABLE " + TABLE_PRODUCT + "(" +
+                COLUMN_BARCODE + " TEXT PRIMARY KEY ASC NOT NULL, " +
+                COLUMN_PRODUCT_NAME + " TEXT NULL, " +
+                COLUMN_METRIC_UNITY_ID + " INT NULL," +
+                COLUMN_QUANTITY + " INT NULL DEFAULT 0," +
+                COLUMN_DESCRIPTION + " TEXT NULL," +
+                COLUMN_TYPE_ID + " INT NULL," +
+                COLUMN_SUBTYPE_ID + " INT NULL," +
+                COLUMN_FAVORITE + " NUMERIC NOT NULL DEFAULT 0," +
+                COLUMN_STATUS + " NUMERIC NOT NULL DEFAULT 0" +
+                ")";
         db.execSQL(createQuery);
 
-        //Criação da tabela df_product
-        createQuery="CREATE TABLE df_product (" +
-                "    barcode varcHAR(30) PRIMARY KEY ASC NOT NULL, " +
-                "    product_name varc(100) NOT NULL, " +
-                "    product_status tinYINT NOT NULL DEFAULT 0);";
+        //Criação da tabela pantry_item
+        createQuery="CREATE TABLE " + TABLE_PANTRY_ITEM + "(" +
+                COLUMN_ID + " INT PRIMARY KEY ASC AUTOINCREMENT, " +
+                COLUMN_LIST_ID + " INT NOT NULL, " +
+                COLUMN_BARCODE + " TEXT NOT NULL, " +
+                COLUMN_BUY_DATE + " INT NULL, " +
+                COLUMN_DUE_DATE + " INT NULL, " +
+                COLUMN_QUANTITY + " INT NULL DEFAULT 0," +
+                COLUMN_STATUS + " NUMERIC NOT NULL DEFAULT 0" +
+                ")";
         db.execSQL(createQuery);
 
-        //Criação da tabela df_list_product
-        createQuery="CREATE TABLE df_list_product (" +
-                "    _id INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                "    user_list_id INTEGER NOT NULL, " +
-                "    barcode varch(30) NOT NULL, " +
-                "    quantity INT DEFAULT 0, " +
-                "    due_date DATE NOT NULL, " +
-                "    product_status tinyint DEFAULT 0);";
+        //Criação da tabela pantry_list
+        createQuery="CREATE TABLE " + TABLE_PANTRY_LIST + "(" +
+                COLUMN_LIST_ID + " INT PRIMARY KEY AUTOINCREMENT, " +
+                COLUMN_LIST_NAME + " TEXT NULL, " +
+                COLUMN_STATUS + " NUMERIC NOT NULL DEFAULT 0" +
+                ")";
         db.execSQL(createQuery);
-
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion){
-
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_PRODUCT);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_PANTRY_ITEM);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_PANTRY_LIST);
+        onCreate(db);
     }
-    private void populaTabelas(SQLiteDatabase db) {
+
+   /* private void populaTabelas(SQLiteDatabase db) {
         Cursor cur = db.rawQuery("SELECT EXISTS (SELECT 1 FROM PANTRY_LIST)", null);
 
         if (cur != null) {
@@ -99,4 +117,5 @@ public class DatabaseOpenHelper extends SQLiteOpenHelper {
             }
         }
     }
+    */
 }

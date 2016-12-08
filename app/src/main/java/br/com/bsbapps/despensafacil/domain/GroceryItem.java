@@ -1,18 +1,16 @@
-package br.com.bsbapps.domain;
+package br.com.bsbapps.despensafacil.domain;
 
 /**
  * Created by proca on 02/12/2016.
- * Representa um item de uma lista da despensa
+ * representa um item de uma lista de compras
  */
 
-public class PantryItem {
+public class GroceryItem {
     String barcode;
-    String dueDate;
     int quantity;
 
-    public PantryItem(String barcode, String dueDate, int quantity) {
+    public GroceryItem(String barcode, int quantity) {
         this.barcode = barcode;
-        this.dueDate = dueDate;
         this.quantity = quantity;
     }
 
@@ -22,14 +20,6 @@ public class PantryItem {
 
     public void setBarcode(String barcode) {
         this.barcode = barcode;
-    }
-
-    public String getDueDate() {
-        return dueDate;
-    }
-
-    public void setDueDate(String dueDate) {
-        this.dueDate = dueDate;
     }
 
     public int getQuantity() {

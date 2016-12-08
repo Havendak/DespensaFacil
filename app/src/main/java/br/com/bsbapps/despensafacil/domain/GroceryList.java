@@ -1,4 +1,4 @@
-package br.com.bsbapps.domain;
+package br.com.bsbapps.despensafacil.domain;
 
 import android.content.ContentValues;
 import android.database.sqlite.SQLiteDatabase;

@@ -1,4 +1,4 @@
-package br.com.bsbapps.domain;
+package br.com.bsbapps.despensafacil.domain;
 
 /**
  * Created by proca on 02/12/2016.

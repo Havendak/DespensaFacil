@@ -20,22 +20,29 @@ public class DatabaseConnector {
     private DatabaseOpenHelper dbOpenHelper;
 
     public DatabaseConnector(Context context){
-        /*try{
+        try{
             context.deleteDatabase(DATABASE_NAME);
         } catch (NullPointerException e){
 
-        }*/
+        }
         dbOpenHelper = new DatabaseOpenHelper(context, DATABASE_NAME, null, DB_CURRENT_VERSION);
     }
 
-    public void open() throws SQLException{
+    public SQLiteDatabase open() throws SQLException{
         database = dbOpenHelper.getWritableDatabase();
+        return database;
     }
 
     public void close() {
         if(database != null) {
             database.close();
         }
+    }
+
+    public void insert(String table, ContentValues values) {
+        open();
+        database.insert(table, null, values);
+        close();
     }
 
     public Long insertList(String name, int defList) {
