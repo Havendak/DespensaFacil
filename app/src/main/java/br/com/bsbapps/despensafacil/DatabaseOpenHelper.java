@@ -22,7 +22,7 @@ public class DatabaseOpenHelper extends SQLiteOpenHelper {
     public static final String COLUMN_ID = "_id";
     public static final String COLUMN_BARCODE = "barcode";
     public static final String COLUMN_PRODUCT_NAME = "product_name";
-    public static final String COLUMN_METRIC_UNITY_ID = "metric_unit_id";
+    public static final String COLUMN_METRIC_UNIT_ID = "metric_unit_id";
     public static final String COLUMN_QUANTITY = "quantity";
     public static final String COLUMN_DESCRIPTION = "description";
     public static final String COLUMN_TYPE_ID = "type_id";
@@ -40,6 +40,7 @@ public class DatabaseOpenHelper extends SQLiteOpenHelper {
 
     public DatabaseOpenHelper(Context context){
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
+        context.deleteDatabase("dfdb");
     }
 
     @Override
@@ -48,7 +49,7 @@ public class DatabaseOpenHelper extends SQLiteOpenHelper {
         createQuery="CREATE TABLE " + TABLE_PRODUCT + "(" +
                 COLUMN_BARCODE + " TEXT PRIMARY KEY ASC NOT NULL, " +
                 COLUMN_PRODUCT_NAME + " TEXT NULL, " +
-                COLUMN_METRIC_UNITY_ID + " INT NULL," +
+                COLUMN_METRIC_UNIT_ID + " INT NULL," +
                 COLUMN_QUANTITY + " INT NULL DEFAULT 0," +
                 COLUMN_DESCRIPTION + " TEXT NULL," +
                 COLUMN_TYPE_ID + " INT NULL," +

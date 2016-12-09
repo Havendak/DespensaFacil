@@ -9,30 +9,26 @@ import br.com.bsbapps.despensafacil.DatabaseOpenHelper;
 
 /**
  * Created by proca on 02/12/2016.
- * Representa um item de uma lista da despensa
+ * Repesenta uma lista co itens da despensa, PantryItem
  */
 
-public class PantryItem {
+public class PantryList {
     // Database
     private SQLiteDatabase database;
     private DatabaseOpenHelper dbHelper;
 
     // Colunas
     private String[] allColumns = {DatabaseOpenHelper.COLUMN_LIST_ID,
-            DatabaseOpenHelper.COLUMN_BARCODE,
-            DatabaseOpenHelper.COLUMN_DUE_DATE,
-            DatabaseOpenHelper.COLUMN_QUANTITY,
+            DatabaseOpenHelper.COLUMN_LIST_NAME,
             DatabaseOpenHelper.COLUMN_STATUS};
 
     // Variáveis privadas
     private int listId;
-    private String barcode;
-    private int dueDate;
-    private int quantity;
+    private String listName;
     private int status;
 
-    //Construtor
-    public PantryItem(Context context) {
+    // Construtor
+    public PantryList(Context context) {
         dbHelper = new DatabaseOpenHelper(context);
     }
 
@@ -41,32 +37,16 @@ public class PantryItem {
         return listId;
     }
 
-    public void setListId(int listId) {
-        this.listId = listId;
+    public void setListId(int ListId) {
+        this.listId = ListId;
     }
 
-    public String getBarcode() {
-        return barcode;
+    public String getListName() {
+        return listName;
     }
 
-    public void setBarcode(String barcode) {
-        this.barcode = barcode;
-    }
-
-    public int getDueDate() {
-        return dueDate;
-    }
-
-    public void setDueDate(int dueDate) {
-        this.dueDate = dueDate;
-    }
-
-    public int getQuantity() {
-        return quantity;
-    }
-
-    public void setQuantity(int quantity) {
-        this.quantity = quantity;
+    public void setListName(String listName) {
+        this.listName = listName;
     }
 
     public int getStatus() {
@@ -91,18 +71,17 @@ public class PantryItem {
     public long insert(){
         ContentValues values = new ContentValues();
         values.put(DatabaseOpenHelper.COLUMN_LIST_ID, listId);
-        values.put(DatabaseOpenHelper.COLUMN_BARCODE, barcode);
-        values.put(DatabaseOpenHelper.COLUMN_DUE_DATE, dueDate);
-        values.put(DatabaseOpenHelper.COLUMN_QUANTITY, quantity);
+        values.put(DatabaseOpenHelper.COLUMN_LIST_NAME, listName);
         values.put(DatabaseOpenHelper.COLUMN_STATUS, status);
 
-        return database.insert(DatabaseOpenHelper.TABLE_PANTRY_ITEM, null, values);
+        return database.insert(DatabaseOpenHelper.TABLE_PANTRY_LIST, null, values);
     }
 
     //Método de deleção
     public void delete() {
-        database.delete(DatabaseOpenHelper.TABLE_PANTRY_ITEM, DatabaseOpenHelper.COLUMN_LIST_ID
-                + " = " + listId + " AND '" + DatabaseOpenHelper.COLUMN_BARCODE
-                + " = " + barcode + "'", null);
+        database.delete(DatabaseOpenHelper.TABLE_PANTRY_LIST, DatabaseOpenHelper.COLUMN_LIST_ID
+                + " = " + listId, null);
     }
+
+
 }
