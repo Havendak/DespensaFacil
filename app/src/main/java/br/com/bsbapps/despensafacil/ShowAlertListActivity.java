@@ -5,23 +5,17 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 
-import java.util.ArrayList;
-
 import br.com.bsbapps.despensafacil.domain.PantryItem;
-
-import static br.com.bsbapps.despensafacil.R.id.productListView;
 
 public class ShowAlertListActivity extends AppCompatActivity  {
     private ListView alertListView;
@@ -46,8 +40,10 @@ public class ShowAlertListActivity extends AppCompatActivity  {
         //preenche lista
         String[] from = new String[]{"product_name"};
         int[] to = new int[]{R.id.alertTextView};
-        alertListAdapter = new SimpleCursorAdapter(
-                ShowAlertListActivity.this, R.layout.alert_list_item, null, from, to, 0);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+            alertListAdapter = new SimpleCursorAdapter(
+                    ShowAlertListActivity.this, R.layout.alert_list_item, null, from, to, 0);
+        }
         alertListView.setAdapter(alertListAdapter);
     }
 
@@ -82,7 +78,6 @@ public class ShowAlertListActivity extends AppCompatActivity  {
 
     @Override
     protected void onStop() {
-        //Cursor cursor = alertListAdapter.getCursor();
         alertListAdapter.changeCursor(null);
         super.onStop();
     }
@@ -92,7 +87,7 @@ public class ShowAlertListActivity extends AppCompatActivity  {
 
         @Override
         protected Cursor doInBackground(Object... params) {
-            return pantryItem.getAlertProducts(currentList, 15);
+            return pantryItem.getAlertProducts(alertDays);
         }
 
         @Override

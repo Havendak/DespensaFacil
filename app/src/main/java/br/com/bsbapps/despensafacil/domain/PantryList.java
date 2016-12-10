@@ -5,6 +5,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
+import android.support.annotation.Nullable;
 
 import br.com.bsbapps.despensafacil.DatabaseOpenHelper;
 
@@ -59,8 +60,12 @@ public class PantryList {
         return status;
     }
 
-    public void setStatus(int status) {
-        this.status = status;
+    public void setStatus(int status) {  this.status = status; }
+
+    private void clearFields() {
+        listId=0;
+        listName="";
+        status=0;
     }
 
     // Método de abertura do database
@@ -81,6 +86,7 @@ public class PantryList {
         open();
         long id = database.insert(DatabaseOpenHelper.TABLE_PANTRY_LIST, null, values);
         close();
+        setListId((int) id);
         return id;
 
     }
@@ -89,6 +95,7 @@ public class PantryList {
     public void delete() {
         database.delete(DatabaseOpenHelper.TABLE_PANTRY_LIST, DatabaseOpenHelper.COLUMN_LIST_ID
                 + " = " + listId, null);
+        clearFields();
     }
 
     //Retorna a lista de despensa padrão (Status=1)
@@ -99,5 +106,22 @@ public class PantryList {
                 null, null, null, null);
         close();
         return c;
+    }
+
+    // Retorna todos os produtos da lista
+    public Cursor getProducts() {
+        String sql = "SELECT A." + DatabaseOpenHelper.COLUMN_ID +
+                ", A." + DatabaseOpenHelper.COLUMN_LIST_ID +
+                ", A." + DatabaseOpenHelper.COLUMN_BARCODE +
+                ", B." + DatabaseOpenHelper.COLUMN_PRODUCT_NAME +
+                ", A." + DatabaseOpenHelper.COLUMN_QUANTITY +
+                ", A." + DatabaseOpenHelper.COLUMN_DUE_DATE +
+                " FROM " + DatabaseOpenHelper.TABLE_PANTRY_ITEM +
+                " A INNER JOIN " + DatabaseOpenHelper.TABLE_PRODUCT +
+                " B ON B." + DatabaseOpenHelper.COLUMN_BARCODE +
+                " = A." + DatabaseOpenHelper.COLUMN_BARCODE +
+                " WHERE A." + DatabaseOpenHelper.COLUMN_LIST_ID +
+                "= ? ORDER BY B." + DatabaseOpenHelper.COLUMN_PRODUCT_NAME;
+        return database.rawQuery(sql,new String[]{String.valueOf(listId)});
     }
 }

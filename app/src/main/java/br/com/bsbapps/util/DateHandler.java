@@ -66,7 +66,28 @@ public class DateHandler {
     }
 
     // Retorna o Unix Timestamp
-    public long getTimestamp(){
-        return System.currentTimeMillis()/1000;
+    public int getTimestamp(){
+        return (int) System.currentTimeMillis()/1000;
+    }
+
+    // Retorna o Unix Timestamp da data
+    public int getTimestamp(Date dt){
+        return (int) dt.getTime()/1000;
+    }
+
+    // Retorna uma data calculada pela soma de dias a partir da data atual
+    public Date addDate(int days){
+        Calendar c = Calendar.getInstance();
+        c.setTime(getDate());
+        c.add(Calendar.DATE, days);
+        return c.getTime();
+    }
+
+    // Retorna uma data calculada pela soma de dias a partir de uma data
+    public Date addDate(Date dt, int days){
+        Calendar c = Calendar.getInstance();
+        c.setTime(dt);
+        c.add(Calendar.DATE, days);
+        return c.getTime();
     }
 }

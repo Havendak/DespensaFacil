@@ -2,6 +2,7 @@ package br.com.bsbapps.despensafacil.domain;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 
@@ -128,7 +129,7 @@ public class Product {
     }
 
     // Método de inserção
-    public long insert(SQLiteDatabase db){
+    public long insert(){
         ContentValues valores = new ContentValues();
         valores.put("BARCODE", barcode);
         valores.put("PRODUCT_NAME", productName);
@@ -140,7 +141,7 @@ public class Product {
         valores.put("FAVORITE",favorite);
         valores.put("STATUS", status);
         open();
-        long result = db.insert(DatabaseOpenHelper.TABLE_PRODUCT,null,valores);
+        long result = database.insert(DatabaseOpenHelper.TABLE_PRODUCT,null,valores);
         close();
         return result;
     }
@@ -152,4 +153,10 @@ public class Product {
                 + " = 1" + barcode + "'", null);
         close();
     }
+
+    public Cursor getProduct(String barcode){
+        return database.query(DatabaseOpenHelper.TABLE_PRODUCT, null, "barcode='" + barcode + "'"
+                , null, null, null, null);
+    }
+
 }

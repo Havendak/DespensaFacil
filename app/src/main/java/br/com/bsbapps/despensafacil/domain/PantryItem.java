@@ -84,6 +84,14 @@ public class PantryItem {
         this.status = status;
     }
 
+    private void clearFields() {
+        listId = 0;
+        barcode = "";
+        dueDate = 0;
+        quantity = 0;
+        status = 0;
+    }
+
     // Método de abertura do database
     public void open() throws SQLException {
         database = dbHelper.getWritableDatabase();
@@ -118,27 +126,34 @@ public class PantryItem {
     }
 
     //Método de retorno dos alertas
-    public Cursor getAlertProducts(int list, int alertDays){
+    public Cursor getAlertProducts(int alertDays){
 
         //recupera dia atual e adiciona a quantidade de dias de alerta
-        Date dateHandler = new DateHandler().getDate();
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-        String stringDateToday = sdf.format(dateHandler);
-        Calendar c = Calendar.getInstance();
-        try {
-            c.setTime(sdf.parse(stringDateToday));
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-        c.add(Calendar.DATE, alertDays);
-        String limitDay = sdf.format(c.getTime());
+        DateHandler dt = new DateHandler();
+        long targetDt = dt.getTimestamp(dt.addDate(alertDays));
 
         //consulta usando a data limite
-        String sql = "SELECT A._id, A.user_list_id, A.barcode, B.product_name, A.quantity, A.due_date, " +
-                "FROM df_list_product A INNER JOIN df_product B ON B.barcode = A.barcode " +
-                "WHERE A.user_list_id = ? ORDER BY B.product_name AND" +
-                "Datetime(A.due_date) <= Datetime(" + limitDay + ")";
+        String sql = "SELECT A." + DatabaseOpenHelper.COLUMN_ID +
+                ", A." + DatabaseOpenHelper.COLUMN_LIST_ID +
+                ", A." + DatabaseOpenHelper.COLUMN_BARCODE +
+                ", B." + DatabaseOpenHelper.COLUMN_PRODUCT_NAME +
+                ", A." +DatabaseOpenHelper.COLUMN_QUANTITY +
+                ", A." + DatabaseOpenHelper.COLUMN_DUE_DATE +
+                " FROM " + DatabaseOpenHelper.TABLE_PANTRY_ITEM +
+                " A INNER JOIN " + DatabaseOpenHelper.TABLE_PRODUCT +
+                " B ON B." + DatabaseOpenHelper.COLUMN_BARCODE +
+                " = A." + DatabaseOpenHelper.COLUMN_BARCODE +
+                " WHERE A." + DatabaseOpenHelper.COLUMN_LIST_ID +
+                " = ? AND A." + DatabaseOpenHelper.COLUMN_DUE_DATE +
+                " <= ? ORDER BY B." + DatabaseOpenHelper.COLUMN_DUE_DATE;
+        return database.rawQuery(sql,new String[]{String.valueOf(listId), String.valueOf(targetDt)});
+    }
 
-        return database.rawQuery(sql,new String[]{String.valueOf(list)});
+    public Cursor getExistentPantryItem(int list, String barcode, Date duedate){
+        long dt = new DateHandler().getTimestamp(duedate);
+        return database.query(DatabaseOpenHelper.TABLE_PANTRY_ITEM, null,
+                DatabaseOpenHelper.COLUMN_LIST_ID + "=" + list + " AND " +
+                DatabaseOpenHelper.COLUMN_BARCODE + "='" + barcode + "' AND " +
+                DatabaseOpenHelper.COLUMN_DUE_DATE + "='" + dt + "'", null, null, null, null);
     }
 }

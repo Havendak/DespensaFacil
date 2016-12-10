@@ -27,6 +27,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Date;
 
+import br.com.bsbapps.despensafacil.domain.PantryItem;
 import br.com.bsbapps.despensafacil.domain.Product;
 import br.com.bsbapps.util.DateHandler;
 import br.com.bsbapps.util.SecurityToken;
@@ -48,6 +49,7 @@ public class AddProductActivity extends AppCompatActivity {
     private EditText dueDateEditText;
 
     Product product = new Product(this);
+    PantryItem pantryItem = new PantryItem(this);
     Cursor qResult;
 
     // Método OnCreate
@@ -139,16 +141,16 @@ public class AddProductActivity extends AppCompatActivity {
                 barcodeEditText.setText(result.getContents());
 
                 // Verifica se o produto existe na base local
-                dbConnector.open();
-                query = dbConnector.getProduct(barcodeEditText.getText().toString());
-                if(query != null){
-                    if (query.getCount()!=0) {
-                        // Se o produto existir, captura o nome e status
-                        query.moveToFirst();
-                        product_status = query.getInt(query.getColumnIndex("product_status"));
-                        product_name = query.getString(query.getColumnIndex("product_name"));
-                    }
-                }
+
+                qResult = product.getProduct(barcodeEditText.getText().toString());
+                if(qResult != null && qResult.getCount()!=0) {
+                    // Se o produto existir, captura o nome e status
+                    qResult.moveToFirst();
+                    product_status = qResult.getInt(
+                            qResult.getColumnIndex(DatabaseOpenHelper.COLUMN_STATUS));
+                    product_name = qResult.getString(
+                            qResult.getColumnIndex(DatabaseOpenHelper.COLUMN_PRODUCT_NAME));
+                 }
 
                 // Se o status = 0 (produto não validado), se o usuário tiver internet habilitada
                 // chama o serviço de pesquisa de produto
@@ -247,29 +249,29 @@ public class AddProductActivity extends AppCompatActivity {
 
     private void saveProduct(){
         if (getIntent().getExtras()==null){
-            dbConnector.open();
-            query = dbConnector.getProduct(barcodeEditText.getText().toString());
-            if(query == null || query.getCount()==0){
-                dbConnector.insertProduct(barcodeEditText.getText().toString(),
-                        productEditText.getText().toString());
+            qResult = product.getProduct(barcodeEditText.getText().toString());
+            product.setBarcode(barcodeEditText.getText().toString());
+            product.setProductName(productEditText.getText().toString());
+            if(qResult == null || qResult.getCount()==0){
+                product.insert();
             } else {
-                dbConnector.updateProduct(barcodeEditText.getText().toString(),
-                        productEditText.getText().toString());
+                //product.update;
             }
 
             Date dateObject = new DateHandler().getDate("dd/MM/yyyy",
                     dueDateEditText.getText().toString());
 
-            dbConnector.open();
-            query = dbConnector.getExistentListProduct(currentList,
+            qResult = pantryItem.getExistentPantryItem(currentList,
                     barcodeEditText.getText().toString(), dateObject);
-            if(query == null || query.getCount()==0) {
-                dbConnector.insertProductOnList(currentList, barcodeEditText.getText().toString(),
-                        Integer.parseInt(quantityEditText.getText().toString()), dateObject);
+            if(qResult == null || qResult.getCount()==0) {
+                pantryItem.setListId(currentList);
+                pantryItem.setBarcode(barcodeEditText.getText().toString());
+                pantryItem.setQuantity(Integer.parseInt(quantityEditText.getText().toString()));
+                pantryItem.setDueDate(new DateHandler().getTimestamp(dateObject));
+                pantryItem.insert();
             } else {
-                dbConnector.incrementQuantity(currentList, barcodeEditText.getText().toString(), dateObject,1);
+                //dbConnector.incrementQuantity(currentList, barcodeEditText.getText().toString(), dateObject,1);
             }
-            query.close();
         }
     }
 }

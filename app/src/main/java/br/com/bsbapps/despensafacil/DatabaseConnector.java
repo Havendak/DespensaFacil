@@ -25,7 +25,7 @@ public class DatabaseConnector {
         } catch (NullPointerException e){
 
         }
-        dbOpenHelper = new DatabaseOpenHelper(context, DATABASE_NAME, null, DB_CURRENT_VERSION);
+        //dbOpenHelper = new DatabaseOpenHelper(context, DATABASE_NAME, null, DB_CURRENT_VERSION);
     }
 
     public SQLiteDatabase open() throws SQLException{
@@ -83,13 +83,8 @@ public class DatabaseConnector {
         close();
     }
 
-    public Cursor getAllProducts() {
-        return database.query("df_product", new String[] {"barcode", "product_name", "product_status"}, null, null, null, null, "product_name");
-    }
 
-    public Cursor getProduct(String barcode){
-        return database.query("df_product", null, "barcode='" + barcode + "'", null, null, null, null);
-    }
+
 
     public void insertProductOnList(int list, String barcode, int quantity, Date duedate) {
         ContentValues newListProduct = new ContentValues();
@@ -117,20 +112,11 @@ public class DatabaseConnector {
         database.rawQuery(sql,new String[]{String.valueOf(quantity), String.valueOf(list), String.valueOf(barcode), String.valueOf(date)});
     }
 
-    public Cursor getAllListProducts(int list) {
-        String sql = "SELECT A._id, A.user_list_id, A.barcode, B.product_name, A.quantity, A.due_date " +
-                "FROM df_list_product A INNER JOIN df_product B ON B.barcode = A.barcode " +
-                "WHERE A.user_list_id = ? ORDER BY B.product_name";
-        return database.rawQuery(sql,new String[]{String.valueOf(list)});
-    }
+
 
     public Cursor getListProduct(int list, String barcode){
         return database.query("df_list_product", null, "user_list_id=" + list + " AND barcode='" + barcode + "'", null, null, null, null);
     }
 
-    public Cursor getExistentListProduct(int list, String barcode, Date duedate){
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-        String date = sdf.format(duedate);
-        return database.query("df_list_product", null, "user_list_id=" + list + " AND barcode='" + barcode + "' AND due_date='" + date + "'", null, null, null, null);
-    }
+
 }
