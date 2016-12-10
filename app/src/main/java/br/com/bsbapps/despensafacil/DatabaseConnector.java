@@ -63,9 +63,7 @@ public class DatabaseConnector {
         return database.query("df_user_list", null, "user_list_id=" + id, null, null, null, null);
     }
 
-    public Cursor getDefaultList() {
-        return database.query("df_user_list", null, "default_list=1", null, null, null, null);
-    }
+
 
     public void insertProduct(String barcode, String product) {
         ContentValues newProduct = new ContentValues();

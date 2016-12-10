@@ -128,7 +128,7 @@ public class Product {
     }
 
     // Método de inserção
-    public void insert(SQLiteDatabase db){
+    public long insert(SQLiteDatabase db){
         ContentValues valores = new ContentValues();
         valores.put("BARCODE", barcode);
         valores.put("PRODUCT_NAME", productName);
@@ -139,12 +139,17 @@ public class Product {
         valores.put("SUBTYPE_ID",subTypeId);
         valores.put("FAVORITE",favorite);
         valores.put("STATUS", status);
-        db.insert(DatabaseOpenHelper.TABLE_PRODUCT,null,valores);
+        open();
+        long result = db.insert(DatabaseOpenHelper.TABLE_PRODUCT,null,valores);
+        close();
+        return result;
     }
 
     //Método de deleção
     public void delete() {
+        open();
         database.delete(DatabaseOpenHelper.TABLE_PRODUCT, DatabaseOpenHelper.COLUMN_BARCODE
                 + " = 1" + barcode + "'", null);
+        close();
     }
 }

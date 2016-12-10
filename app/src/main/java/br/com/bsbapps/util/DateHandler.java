@@ -64,4 +64,9 @@ public class DateHandler {
         Date resultdate = new Date(data);
         return sdf.format(resultdate);
     }
+
+    // Retorna o Unix Timestamp
+    public long getTimestamp(){
+        return System.currentTimeMillis()/1000;
+    }
 }

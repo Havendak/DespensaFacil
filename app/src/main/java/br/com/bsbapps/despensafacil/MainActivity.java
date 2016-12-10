@@ -11,9 +11,11 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.widget.Toast;
+
+import br.com.bsbapps.despensafacil.domain.PantryList;
 
 public class MainActivity extends AppCompatActivity {
+    PantryList pantryList = new PantryList(MainActivity.this);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,12 +49,10 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private class createFirstList extends AsyncTask<Long, Object, Cursor> {
-        DatabaseConnector dbConnector = new DatabaseConnector(MainActivity.this);
 
         @Override
         protected Cursor doInBackground(Long... params){
-            dbConnector.open();
-            return dbConnector.getDefaultList();
+            return pantryList.getDefaultList();
         }
 
         @Override
@@ -60,16 +60,17 @@ public class MainActivity extends AppCompatActivity {
             super.onPostExecute(result);
             Long id;
             if(result.getCount() == 0) {
-                id = dbConnector.insertList("Primeira Lista", 1);
+                pantryList.setListName("Despensa Padrão");
+                pantryList.setStatus(PantryList.PANTRY_LIST_STATUS_DEFAULT);
+                id = pantryList.insert();
             } else {
                 result.moveToFirst();
-                id = result.getLong(result.getColumnIndex("user_list_id"));
+                id = result.getLong(result.getColumnIndex(DatabaseOpenHelper.COLUMN_LIST_ID));
             }
             result.close();
-            dbConnector.close();
             SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(MainActivity.this.getApplicationContext());
             SharedPreferences.Editor editor = preferences.edit();
-            editor.putLong("br.com.bsbapps.despensafacil.CURRENT_LIST_ID", id); // value to store
+            editor.putLong("br.com.bsbapps.despensafacil.CURRENT_PANTRY_LIST_ID", id); // value to store
             editor.apply();
         }
     }

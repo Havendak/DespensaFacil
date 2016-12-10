@@ -33,6 +33,7 @@ public class DatabaseOpenHelper extends SQLiteOpenHelper {
     public static final String COLUMN_BUY_DATE = "buy_date";
     public static final String COLUMN_LIST_ID = "list_id";
     public static final String COLUMN_LIST_NAME = "list_name";
+    public static final String COLUMN_DEFAULT = "default";
 
     // Database
     private static final String DATABASE_NAME = "despensafacil.db";
@@ -40,7 +41,13 @@ public class DatabaseOpenHelper extends SQLiteOpenHelper {
 
     public DatabaseOpenHelper(Context context){
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
-        context.deleteDatabase("dfdb");
+
+        // Código utilizado para testes. Comentar ao finalizar os testes
+        try {
+                context.deleteDatabase("dfdb");
+        } catch(Exception e) {
+
+        }
     }
 
     @Override

@@ -2,6 +2,7 @@ package br.com.bsbapps.despensafacil.domain;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 
@@ -14,7 +15,7 @@ import br.com.bsbapps.despensafacil.DatabaseOpenHelper;
 
 public class PantryList {
     // Database
-    private SQLiteDatabase database;
+    private static SQLiteDatabase database;
     private DatabaseOpenHelper dbHelper;
 
     // Colunas
@@ -26,6 +27,11 @@ public class PantryList {
     private int listId;
     private String listName;
     private int status;
+
+    // Constantes
+    public static final int PANTRY_LIST_STATUS_NORMAL = 0;
+    public static final int PANTRY_LIST_STATUS_DEFAULT = 1;
+    public static final int PANTRY_LIST_STATUS_INACTIVE = 2;
 
     // Construtor
     public PantryList(Context context) {
@@ -70,11 +76,13 @@ public class PantryList {
     //Método de inserção
     public long insert(){
         ContentValues values = new ContentValues();
-        values.put(DatabaseOpenHelper.COLUMN_LIST_ID, listId);
         values.put(DatabaseOpenHelper.COLUMN_LIST_NAME, listName);
         values.put(DatabaseOpenHelper.COLUMN_STATUS, status);
+        open();
+        long id = database.insert(DatabaseOpenHelper.TABLE_PANTRY_LIST, null, values);
+        close();
+        return id;
 
-        return database.insert(DatabaseOpenHelper.TABLE_PANTRY_LIST, null, values);
     }
 
     //Método de deleção
@@ -83,5 +91,13 @@ public class PantryList {
                 + " = " + listId, null);
     }
 
-
+    //Retorna a lista de despensa padrão (Status=1)
+    public Cursor getDefaultList() {
+        open();
+        Cursor c = database.query(DatabaseOpenHelper.TABLE_PANTRY_LIST, null,
+                DatabaseOpenHelper.COLUMN_STATUS + "=" + PANTRY_LIST_STATUS_DEFAULT,
+                null, null, null, null);
+        close();
+        return c;
+    }
 }

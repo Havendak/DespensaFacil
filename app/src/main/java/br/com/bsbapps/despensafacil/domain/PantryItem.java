@@ -102,15 +102,19 @@ public class PantryItem {
         values.put(DatabaseOpenHelper.COLUMN_DUE_DATE, dueDate);
         values.put(DatabaseOpenHelper.COLUMN_QUANTITY, quantity);
         values.put(DatabaseOpenHelper.COLUMN_STATUS, status);
-
-        return database.insert(DatabaseOpenHelper.TABLE_PANTRY_ITEM, null, values);
+        open();
+        long result = database.insert(DatabaseOpenHelper.TABLE_PANTRY_ITEM, null, values);
+        close();
+        return result;
     }
 
     //Método de deleção
     public void delete() {
+        open();
         database.delete(DatabaseOpenHelper.TABLE_PANTRY_ITEM, DatabaseOpenHelper.COLUMN_LIST_ID
                 + " = " + listId + " AND '" + DatabaseOpenHelper.COLUMN_BARCODE
                 + " = " + barcode + "'", null);
+        close();
     }
 
     //Método de retorno dos alertas

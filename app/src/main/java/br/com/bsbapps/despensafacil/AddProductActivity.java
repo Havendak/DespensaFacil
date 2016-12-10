@@ -27,6 +27,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Date;
 
+import br.com.bsbapps.despensafacil.domain.Product;
 import br.com.bsbapps.util.DateHandler;
 import br.com.bsbapps.util.SecurityToken;
 
@@ -46,8 +47,8 @@ public class AddProductActivity extends AppCompatActivity {
     private EditText quantityEditText;
     private EditText dueDateEditText;
 
-    DatabaseConnector dbConnector = new DatabaseConnector(this);
-    Cursor query;
+    Product product = new Product(this);
+    Cursor qResult;
 
     // Método OnCreate
     // Chamado na criação da activity, antes da exibição na tela
@@ -160,12 +161,16 @@ public class AddProductActivity extends AppCompatActivity {
                     if (networkInfo != null && networkInfo.isConnected()) {
                         // Monta token de validação para chamada do serviço
                         String key = new SecurityToken().getKey();
+                        // Captura data atual e formata em Unix Timestamp
+                        String ts = String.valueOf(new DateHandler().getTimestamp());
                         // Monta url de chamada do serviço passando os parâmetros
                         String urlText = "http://becklas.com/bsbapps/despensafacil/dfsearch.php";
                         urlText = urlText.concat("?source=");
                         urlText = urlText.concat(key);
                         urlText = urlText.concat("&q=");
                         urlText = urlText.concat(barcodeEditText.getText().toString());
+                        urlText = urlText.concat("&s=");
+                        urlText = urlText.concat(ts);
                         // Chama método assíncrono de pesquisa de produto
                         new SearchProduct().execute(urlText);
                         return;
