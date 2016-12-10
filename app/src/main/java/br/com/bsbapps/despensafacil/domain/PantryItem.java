@@ -2,10 +2,17 @@ package br.com.bsbapps.despensafacil.domain;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+
 import br.com.bsbapps.despensafacil.DatabaseOpenHelper;
+import br.com.bsbapps.util.DateHandler;
 
 /**
  * Created by proca on 02/12/2016.
@@ -104,5 +111,30 @@ public class PantryItem {
         database.delete(DatabaseOpenHelper.TABLE_PANTRY_ITEM, DatabaseOpenHelper.COLUMN_LIST_ID
                 + " = " + listId + " AND '" + DatabaseOpenHelper.COLUMN_BARCODE
                 + " = " + barcode + "'", null);
+    }
+
+    //Método de retorno dos alertas
+    public Cursor getAlertProducts(int list, int alertDays){
+
+        //recupera dia atual e adiciona a quantidade de dias de alerta
+        Date dateHandler = new DateHandler().getDate();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        String stringDateToday = sdf.format(dateHandler);
+        Calendar c = Calendar.getInstance();
+        try {
+            c.setTime(sdf.parse(stringDateToday));
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        c.add(Calendar.DATE, alertDays);
+        String limitDay = sdf.format(c.getTime());
+
+        //consulta usando a data limite
+        String sql = "SELECT A._id, A.user_list_id, A.barcode, B.product_name, A.quantity, A.due_date, " +
+                "FROM df_list_product A INNER JOIN df_product B ON B.barcode = A.barcode " +
+                "WHERE A.user_list_id = ? ORDER BY B.product_name AND" +
+                "Datetime(A.due_date) <= Datetime(" + limitDay + ")";
+
+        return database.rawQuery(sql,new String[]{String.valueOf(list)});
     }
 }
